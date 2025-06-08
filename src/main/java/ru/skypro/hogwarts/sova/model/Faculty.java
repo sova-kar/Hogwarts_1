@@ -1,26 +1,35 @@
 package ru.skypro.hogwarts.sova.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Schema(description = "Факультет Хогвартса")
+
 public class Faculty {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "Идентификатор факультета", example = "1")
     private Long id;
 
+    @Version
+    private Integer version = 0;
+
     @Schema(description = "Название факультета", example = "Гриффиндор")
     private String name;
 
     @Schema(description = "Цвет факультета", example = "красный")
     private String color;
+
+    @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Student> students;
 
     public Faculty() {
     }
@@ -29,6 +38,7 @@ public class Faculty {
         this.id = id;
         this.name = name;
         this.color = color;
+        this.version = 0;
     }
 
     public Long getId() {
@@ -76,4 +86,6 @@ public class Faculty {
                 ", color='" + color + '\'' +
                 '}';
     }
+    public List<Student> getStudents() { return students; }
+    public void setStudents(List<Student> students) { this.students = students; }
 }
