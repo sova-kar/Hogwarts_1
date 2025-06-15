@@ -5,9 +5,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.skypro.hogwarts.sova.model.Faculty;
+import ru.skypro.hogwarts.sova.model.Student;
 import ru.skypro.hogwarts.sova.service.FacultyService;
 
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("faculty")
@@ -66,5 +68,14 @@ public class FacultyController {
     @GetMapping
     public Collection<Faculty> getAll() {
         return facultyService.getAllFaculties();
+    }
+    @GetMapping("/search")
+    public ResponseEntity<List<Faculty>> searchFaculties(
+            @RequestParam String query) {
+        return ResponseEntity.ok(facultyService.search(query));
+    }
+    @GetMapping("/{id}/students")
+    public List<Student> getFacultyStudents(@PathVariable Long id) {
+        return facultyService.getStudentsByFacultyId(id);
     }
 }

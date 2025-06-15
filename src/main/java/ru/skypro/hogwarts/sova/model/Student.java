@@ -1,20 +1,32 @@
 package ru.skypro.hogwarts.sova.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
 @Entity
 @Schema(description = "Студент Хогвартса")
+
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
+
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "Идентификатор студента", example = "1")
     private Long id;
+
+    @Version
+    private Integer version = 0;
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
 
     @Schema(description = "Имя студента", example = "Гарри Поттер")
     private String name;
@@ -24,11 +36,17 @@ public class Student {
 
     public Student() {
     }
+    @ManyToOne
+    @JoinColumn(name = "faculty_id")
+    @JsonBackReference
+    private Faculty faculty;
 
-    public Student(Long id, String name, int age) {
+    public Student(Long id, String name, int age, Faculty faculty) {
         this.id = id;
         this.name = name;
         this.age = age;
+        this.faculty = faculty;
+        this.version = 0;
     }
 
     public Long getId() {
@@ -76,4 +94,7 @@ public class Student {
                 ", age=" + age +
                 '}';
     }
+    public Faculty getFaculty() { return faculty; }
+    public void setFaculty(Faculty faculty) { this.faculty = faculty; }
+
 }
